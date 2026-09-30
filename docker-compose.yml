@@ -21,6 +21,10 @@ services:
       - "3000:3000"
     env_file: .env
     environment:
+      # Local development only: if AUTH_SECRET is empty/unset in .env, fall back to a PUBLIC,
+      # insecure dev secret. The app refuses it on an https deployment; set a real
+      # secret (openssl rand -base64 32) for anything other than local use.
+      AUTH_SECRET: ${AUTH_SECRET:-dev-only-insecure-secret-change-me-0123456789}
       # Inside the Docker network the database host is the service name.
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mvp?schema=public
     depends_on:
@@ -35,6 +39,7 @@ services:
       target: builder
     env_file: .env
     environment:
+      AUTH_SECRET: ${AUTH_SECRET:-dev-only-insecure-secret-change-me-0123456789}
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mvp?schema=public
     depends_on:
       postgres:

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { destroySession } from "@/lib/auth/session";
 
-export async function POST(req: Request) {
+export async function POST() {
   await destroySession();
-  return NextResponse.redirect(new URL("/login", req.url), 303);
+  // Relative redirect: behind Docker/proxies the request URL host (e.g. 0.0.0.0) is not the public one.
+  return new NextResponse(null, {
+    status: 303,
+    headers: { Location: "/login" },
+  });
 }

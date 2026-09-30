@@ -98,9 +98,9 @@ describe("login / logout", () => {
     await loginRoute(
       req("POST", { email: "alice@example.test", password: "password123" }),
     );
-    const res = await logoutRoute(req("POST"));
+    const res = await logoutRoute();
     expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe("http://localhost:3000/login");
+    expect(res.headers.get("location")).toBe("/login");
     expect(await getCurrentUser()).toBeNull();
   });
 

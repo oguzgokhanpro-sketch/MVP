@@ -10,11 +10,12 @@ Fonctionnel : inscription (création d'une organisation + utilisateur Admin), co
 git clone <url-du-repo>
 cd MVP
 cp .env.example .env
-# Renseignez AUTH_SECRET (>= 32 caractères) : openssl rand -base64 32
 docker compose up --build
 ```
 
 Puis ouvrir <http://localhost:3000/register>, créer une organisation, se connecter et accéder au dashboard.
+
+`AUTH_SECRET` peut rester vide dans `.env` pour le développement local Docker : `docker-compose.yml` utilise alors un secret de développement **public et non sécurisé** (préfixe `dev-only-insecure-`). L'application le refuse dès que `NEXT_PUBLIC_APP_URL` est en `https://`. Pour tout autre usage, définir un vrai secret : `openssl rand -base64 32`. Hors Docker (`npm run dev`), `AUTH_SECRET` est obligatoire dans `.env`.
 
 Au démarrage, le conteneur `app` applique automatiquement les migrations (`prisma migrate deploy`). L'application **refuse de démarrer** si `DATABASE_URL`, `AUTH_SECRET` ou `NEXT_PUBLIC_APP_URL` manque ou est invalide.
 
@@ -43,7 +44,7 @@ Les données persistent grâce au volume Docker `postgres_data`.
 Prérequis : Node 22+, un PostgreSQL local (ou `docker compose up postgres`).
 
 ```bash
-cp .env.example .env        # DATABASE_URL pointe sur localhost par défaut
+cp .env.example .env        # DATABASE_URL pointe sur localhost par défaut ; renseigner AUTH_SECRET (openssl rand -base64 32)
 npm install
 npm run db:migrate          # crée/applique les migrations (prisma migrate dev)
 npm run db:seed             # optionnel
@@ -82,6 +83,9 @@ tests/          tests automatisés (Vitest)
 - **Colonne `password_hash`** ajoutée à `users` (nécessaire à l'authentification, non listée dans les champs du cahier des charges).
 - **API `/api/users`** : minimale, sert de première ressource scopée par organisation pour les tests d'isolation (lecture, modification et suppression réservées aux Admin pour les deux dernières).
 - **Erreurs** : réponses JSON génériques, pages `404` et `error` sans détail technique ; les détails ne sont jamais renvoyés au client.
+- **Dernier Admin protégé** : suppression, désactivation ou rétrogradation du dernier Admin actif d'une organisation refusées (409 `LAST_ADMIN`). Les changements d'Admin d'une organisation sont sérialisés par un verrou de ligne sur l'organisation (pas de course entre deux Admins).
+- **Routes protégées** : le middleware ne cible que les préfixes privés (`/dashboard`, `/settings`, liste `matcher` de `middleware.ts`) ; les URL inconnues affichent la page 404 pour tous. **Toute nouvelle section privée doit être ajoutée à ce `matcher`** (et appeler `requireAuth()`).
+- **Image Docker** : `node:22-alpine` (OpenSSL et certificats déjà inclus), sortie Next.js `standalone`, exécution sous l'utilisateur `node`. L'image de base est paramétrable (`--build-arg NODE_IMAGE=...`), utile derrière un proxy d'entreprise.
 - Hors périmètre : SSO, OAuth, SCIM, MFA, mot de passe oublié, vérification d'email.
 
 ## Sécurité

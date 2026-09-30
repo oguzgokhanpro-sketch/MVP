@@ -1,7 +1,7 @@
 export class AppError extends Error {
   constructor(
     readonly status: number,
-    readonly code: string,
+    public code: string,
     message: string,
   ) {
     super(message);
@@ -29,5 +29,12 @@ export class NotFoundError extends AppError {
 export class ConflictError extends AppError {
   constructor(message = "Conflict") {
     super(409, "CONFLICT", message);
+  }
+}
+
+export class LastAdminError extends ConflictError {
+  constructor() {
+    super("An organization must keep at least one active admin");
+    this.code = "LAST_ADMIN";
   }
 }

@@ -3,17 +3,10 @@ import { jwtVerify } from "jose";
 
 // First line of defence: redirect unauthenticated visitors away from private pages.
 // Real authorization (user still active, role, organization) happens in lib/permissions.
-const PUBLIC_PATHS = ["/login", "/register"];
-
+// Only private areas are matched (see `config`), so unknown URLs fall through to the 404 page.
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const isPublic = PUBLIC_PATHS.includes(pathname);
-  const signedIn = await hasValidSession(req);
-
-  if (!signedIn && !isPublic) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-  return NextResponse.next();
+  if (await hasValidSession(req)) return NextResponse.next();
+  return NextResponse.redirect(new URL("/login", req.url));
 }
 
 async function hasValidSession(req: NextRequest): Promise<boolean> {
@@ -30,7 +23,7 @@ async function hasValidSession(req: NextRequest): Promise<boolean> {
   }
 }
 
+// Add every new private section here (Lot 2+: e.g. "/companies/:path*").
 export const config = {
-  // API routes answer 401 themselves; skip static assets.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/dashboard/:path*", "/settings/:path*"],
 };
