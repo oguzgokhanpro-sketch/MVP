@@ -14,11 +14,15 @@ enum Role {
 }
 
 model Organization {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  users     User[]
+  id         String     @id @default(uuid()) @db.Uuid
+  name       String
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  users      User[]
+  companies  Company[]
+  contacts   Contact[]
+  categories Category[]
+  themes     Theme[]
 
   @@map("organizations")
 }
@@ -38,4 +42,74 @@ model User {
 
   @@index([organizationId])
   @@map("users")
+}
+
+model Company {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String
+  domain         String?
+  // MRR and ARR are independent amounts (never derived from each other); no currency in this scope.
+  mrr            Decimal?     @db.Decimal(14, 2)
+  arr            Decimal?     @db.Decimal(14, 2)
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  contacts       Contact[]
+
+  @@index([organizationId, active])
+  @@index([organizationId, name])
+  @@map("companies")
+}
+
+model Contact {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  companyId      String       @map("company_id") @db.Uuid
+  name           String
+  email          String?
+  phone          String?
+  // Free text job title (e.g. "CTO"); unrelated to user roles.
+  role           String?
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  company        Company      @relation(fields: [companyId], references: [id])
+
+  @@index([organizationId, companyId, active])
+  @@map("contacts")
+}
+
+// Unique (organization_id, lower(name)) is enforced by a SQL index in the migration
+// (Prisma cannot express expression indexes).
+model Category {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String
+  active         Boolean      @default(true)
+  isDefault      Boolean      @default(false) @map("is_default")
+  sortOrder      Int          @map("sort_order")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId, sortOrder])
+  @@map("categories")
+}
+
+model Theme {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String
+  active         Boolean      @default(true)
+  isDefault      Boolean      @default(false) @map("is_default")
+  sortOrder      Int          @map("sort_order")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId, sortOrder])
+  @@map("themes")
 }

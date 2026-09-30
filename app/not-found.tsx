@@ -6,7 +6,7 @@ export default function NotFound() {
       <div className="card">
         <h1>Page introuvable</h1>
         <p>La page demandée n&apos;existe pas.</p>
-        <Link href="/dashboard">Retour au dashboard</Link>
+        <Link href="/tableau-de-bord">Retour au tableau de bord</Link>
       </div>
     </main>
   );

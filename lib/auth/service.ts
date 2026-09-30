@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db/client";
+import { createDefaultReferentials } from "@/lib/db/defaults";
 import { ConflictError, UnauthorizedError } from "@/lib/errors";
 import {
   LoginSchema,
@@ -20,14 +21,18 @@ export async function register(input: RegisterInput) {
   const passwordHash = await hashPassword(data.password);
 
   try {
-    const user = await db.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        passwordHash,
-        role: "ADMIN",
-        organization: { create: { name: data.organizationName } },
-      },
+    const user = await db.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          passwordHash,
+          role: "ADMIN",
+          organization: { create: { name: data.organizationName } },
+        },
+      });
+      await createDefaultReferentials(tx, created.organizationId);
+      return created;
     });
     await createSession(user.id);
     return { id: user.id };

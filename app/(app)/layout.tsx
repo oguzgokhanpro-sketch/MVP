@@ -7,7 +7,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  if (!(await getCurrentUser())) redirect("/login");
+  if (!(await getCurrentUser())) redirect("/connexion");
   return (
     <div className="shell">
       <Sidebar />

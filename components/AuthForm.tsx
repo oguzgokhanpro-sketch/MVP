@@ -30,7 +30,7 @@ export function AuthForm({ endpoint, fields, submitLabel }: Props) {
         body: JSON.stringify(body),
       });
       if (res.ok) {
-        router.push("/dashboard");
+        router.push("/tableau-de-bord");
         router.refresh();
         return;
       }

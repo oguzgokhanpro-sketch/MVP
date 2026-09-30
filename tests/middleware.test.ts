@@ -13,19 +13,19 @@ const isMatched = (path: string) =>
   );
 
 describe("route protection", () => {
-  it("redirects protected pages to /login without a session", async () => {
-    for (const path of ["/dashboard", "/settings"]) {
+  it("redirects protected pages to /connexion without a session", async () => {
+    for (const path of ["/tableau-de-bord", "/parametres"]) {
       expect(isMatched(path)).toBe(true);
       const res = await middleware(new NextRequest(url(path)));
       expect(res.status).toBe(307);
-      expect(res.headers.get("location")).toBe(url("/login"));
+      expect(res.headers.get("location")).toBe(url("/connexion"));
     }
   });
 
   it("does not intercept public pages, API routes or unknown URLs (so /nope reaches the 404 page)", () => {
     for (const path of [
-      "/login",
-      "/register",
+      "/connexion",
+      "/inscription",
       "/nope",
       "/api/users",
       "/does/not/exist",
@@ -39,14 +39,14 @@ describe("route protection", () => {
     await createSession("00000000-0000-0000-0000-000000000000");
     const cookie = `session=${jar.get("session")}`;
     const res = await middleware(
-      new NextRequest(url("/dashboard"), { headers: { cookie } }),
+      new NextRequest(url("/tableau-de-bord"), { headers: { cookie } }),
     );
     expect(res.headers.get("location")).toBeNull();
   });
 
   it("rejects a forged cookie", async () => {
     const res = await middleware(
-      new NextRequest(url("/dashboard"), {
+      new NextRequest(url("/tableau-de-bord"), {
         headers: { cookie: "session=forged" },
       }),
     );

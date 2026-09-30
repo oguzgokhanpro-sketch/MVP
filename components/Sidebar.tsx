@@ -4,8 +4,9 @@ import { LogoutButton } from "./LogoutButton";
 export function Sidebar() {
   return (
     <nav className="sidebar">
-      <Link href="/dashboard">Dashboard</Link>
-      <Link href="/settings">Paramètres</Link>
+      <Link href="/tableau-de-bord">Tableau de bord</Link>
+      <Link href="/entreprises">Entreprises</Link>
+      <Link href="/parametres">Paramètres</Link>
       <LogoutButton />
     </nav>
   );

@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/AuthForm";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <main className="center">
       <div className="card">
-        <h1>Connexion</h1>
+        <h1>Créer un compte</h1>
         <AuthForm
-          endpoint="/api/auth/login"
-          submitLabel="Se connecter"
+          endpoint="/api/auth/register"
+          submitLabel="Créer mon compte"
           fields={[
+            { name: "name", label: "Nom", autoComplete: "name" },
             {
               name: "email",
               label: "Email",
@@ -20,12 +21,17 @@ export default function LoginPage() {
               name: "password",
               label: "Mot de passe",
               type: "password",
-              autoComplete: "current-password",
+              autoComplete: "new-password",
+            },
+            {
+              name: "organizationName",
+              label: "Nom de l'organisation",
+              autoComplete: "organization",
             },
           ]}
         />
         <p>
-          Pas de compte ? <Link href="/register">Créer un compte</Link>
+          Déjà inscrit ? <Link href="/connexion">Se connecter</Link>
         </p>
       </div>
     </main>

@@ -6,6 +6,6 @@ export async function POST() {
   // Relative redirect: behind Docker/proxies the request URL host (e.g. 0.0.0.0) is not the public one.
   return new NextResponse(null, {
     status: 303,
-    headers: { Location: "/login" },
+    headers: { Location: "/connexion" },
   });
 }

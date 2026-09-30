@@ -94,13 +94,13 @@ describe("login / logout", () => {
     expect(res.status).toBe(401);
   });
 
-  it("logs out: session removed and redirect to /login", async () => {
+  it("logs out: session removed and redirect to /connexion", async () => {
     await loginRoute(
       req("POST", { email: "alice@example.test", password: "password123" }),
     );
     const res = await logoutRoute();
     expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe("/login");
+    expect(res.headers.get("location")).toBe("/connexion");
     expect(await getCurrentUser()).toBeNull();
   });
 
@@ -111,7 +111,7 @@ describe("login / logout", () => {
 });
 
 describe("protected access", () => {
-  it("requireAuth (used by /dashboard) rejects without a session", async () => {
+  it("requireAuth (used by /tableau-de-bord) rejects without a session", async () => {
     await expect(requireAuth()).rejects.toBeInstanceOf(UnauthorizedError);
   });
 });

@@ -109,3 +109,59 @@ dt {
 dd {
   margin: 0;
 }
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+}
+.content th,
+.content td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.content .num {
+  text-align: right;
+}
+.content .toolbar,
+.content .row,
+.content .pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0;
+}
+.content .card {
+  max-width: 520px;
+  margin: 16px 0;
+}
+.content .inline-form {
+  max-width: 520px;
+}
+button.secondary {
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+.ref-list {
+  padding-left: 20px;
+}
+.ref-list li.inactive > .row > span:first-child {
+  text-decoration: line-through;
+  color: var(--muted);
+}

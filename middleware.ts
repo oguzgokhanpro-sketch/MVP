@@ -6,7 +6,7 @@ import { jwtVerify } from "jose";
 // Only private areas are matched (see `config`), so unknown URLs fall through to the 404 page.
 export async function middleware(req: NextRequest) {
   if (await hasValidSession(req)) return NextResponse.next();
-  return NextResponse.redirect(new URL("/login", req.url));
+  return NextResponse.redirect(new URL("/connexion", req.url));
 }
 
 async function hasValidSession(req: NextRequest): Promise<boolean> {
@@ -23,7 +23,11 @@ async function hasValidSession(req: NextRequest): Promise<boolean> {
   }
 }
 
-// Add every new private section here (Lot 2+: e.g. "/companies/:path*").
+// Add every new private section here (e.g. "/entreprises/:path*").
 export const config = {
-  matcher: ["/dashboard/:path*", "/settings/:path*"],
+  matcher: [
+    "/tableau-de-bord/:path*",
+    "/entreprises/:path*",
+    "/parametres/:path*",
+  ],
 };
