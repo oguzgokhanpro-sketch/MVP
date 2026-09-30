@@ -1,0 +1,18 @@
+# dependencies
+node_modules
+
+# next
+.next
+out
+
+# env (never commit real secrets)
+.env
+.env.local
+.env.*.local
+
+# misc
+coverage
+*.log
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
